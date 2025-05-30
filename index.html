@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Netflix News Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <div class="container">
+            <h1>Netflix News Analysis</h1>
+
+            <h2>📰 News Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in data[0].keys() %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for cell in row.values() %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="chart-container">
+                <div>
+                    <h2>📊 Price Comparison (Open vs Close)</h2>
+                    <canvas id="barChart" width="1100" height="370"></canvas>
+                </div>
+
+                <div>
+                    <h2>📈 Netflix Stock Trend</h2>
+                    <canvas id="lineChart" width="1100" height="370"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const df = {{ data | tojson }};
+        const labels = df.map(d => d.date);
+        const openPrices = df.map(d => parseFloat(d.price_open) || 0);
+        const closePrices = df.map(d => parseFloat(d.price_close) || 0);
+
+        // Bar Chart
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Open Price',
+                        data: openPrices,
+                        backgroundColor: 'rgba(75,192,192,0.6)'
+                    },
+                    {
+                        label: 'Close Price',
+                        data: closePrices,
+                        backgroundColor: 'rgba(153,102,255,0.6)'
+                    }
+                ]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Line Chart
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Open Price',
+                        data: openPrices,
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54,162,235,0.2)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Close Price',
+                        data: closePrices,
+                        borderColor: '#FF6384',
+                        backgroundColor: 'rgba(255,99,132,0.2)',
+                        fill: true,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price'
+                        },
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Netflix News Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    
+    <div id="wrapper">
+        <div class="container">
+            <h1>Netflix News Analysis</h1>
+
+            <h2>📰 News Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in data[0].keys() %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for cell in row.values() %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h2>📊 Price Comparison (Open vs Close)</h2>
+            <canvas id="barChart"></canvas>
+
+            <h2>🥧 Impact Distribution</h2>
+            <canvas id="pieChart" width="400" height="300"></canvas>
+
+    </div>
+
+    </div>
+
+
+
+
+
+    <script>
+        const df = {{ data | tojson }};
+        const labels = df.map(d => d.date);
+        const openPrices = df.map(d => parseFloat(d.price_open) || 0);
+        const closePrices = df.map(d => parseFloat(d.price_close) || 0);
+
+        const impactCounts = df.reduce((acc, row) => {
+            const imp = row.impact;
+            acc[imp] = (acc[imp] || 0) + 1;
+            return acc;
+        }, {});
+
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Open Price', data: openPrices, backgroundColor: 'rgba(75,192,192,0.6)' },
+                    { label: 'Close Price', data: closePrices, backgroundColor: 'rgba(153,102,255,0.6)' }
+                ]
+            }
+        });
+
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(impactCounts),
+                datasets: [{
+                    data: Object.values(impactCounts),
+                    backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+                }]
+            }
+        });
+    </script>
+</body>
+</html> -->
