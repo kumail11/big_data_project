@@ -119,7 +119,7 @@ def dashboard():
         bar_chart = bar_fig.to_json()
         line_chart = line_fig.to_json()
 
-        return render_template('dashboard.html', bar_chart=bar_chart, line_chart=line_chart)
+        return render_template('index.html', bar_chart=bar_chart, line_chart=line_chart)
     except Exception as e:
         logger.error(f"Error rendering dashboard: {e}")
         return "Error rendering dashboard, please check logs."
