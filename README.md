@@ -69,3 +69,8 @@ Monetization and Business Opportunities:
  Data platforms that provide analytics-as-a-service.
  Additionally, this project can be offered as a SaaS product for live trend and financial
 sentiment analysis.
+
+![image](https://github.com/user-attachments/assets/93a73b43-dac6-490a-8972-f339a0f0a4d7)
+
+![image](https://github.com/user-attachments/assets/ef585f25-622b-46a0-a361-c13ed08a52d6)
+
